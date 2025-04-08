@@ -30,7 +30,7 @@ public class ProdutosDAO {
         String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, produto.getNome());
-        stmt.setInt(2, produto.getValor());
+        stmt.setDouble(2, produto.getValor());
         stmt.setString(3, produto.getStatus());
 
         int rows = stmt.executeUpdate(); // retorna quantas linhas foram inseridas
@@ -77,7 +77,7 @@ public class ProdutosDAO {
             ProdutosDTO prod = new ProdutosDTO();
             prod.setId(rs.getInt("id")); // se tiver ID
             prod.setNome(rs.getString("nome"));
-            prod.setValor(rs.getInt("valor"));
+            prod.setValor(rs.getDouble("valor"));
             prod.setStatus(rs.getString("status"));
             lista.add(prod);
         }
@@ -92,6 +92,37 @@ public class ProdutosDAO {
 
     return lista;
     }
+    
+ public ArrayList<ProdutosDTO> listarProdutosVendidos() {
+    ArrayList<ProdutosDTO> listaVendidos = new ArrayList<>();
+    Connection conn = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";
+
+    try {
+        conn = new conectaDAO().connectDB();
+        pst = conn.prepareStatement(sql);
+        rs = pst.executeQuery();
+
+        while (rs.next()) {
+            ProdutosDTO prod = new ProdutosDTO();
+            prod.setId(rs.getInt("id"));
+            prod.setNome(rs.getString("nome"));
+            prod.setValor(rs.getDouble("valor"));
+            prod.setStatus(rs.getString("status"));
+            listaVendidos.add(prod);
+        }
+
+        rs.close();
+        pst.close();
+        conn.close();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro ao listar vendidos: " + e);
+    }
+
+    return listaVendidos;
+}
     
     
     
